@@ -13,23 +13,23 @@
 #include "helper.hpp"
 #include "golden.hpp"
 
-#include "actlass/actlass.hpp"
-#include "actlass/arch/arch.hpp"
-#include "actlass/matmul/block/block_mmad.hpp"
-#include "actlass/matmul/block/block_swizzle.hpp"
-#include "actlass/matmul/dispatch_policy.hpp"
-#include "actlass/matmul/kernel/matmul_universal.hpp"
-#include "actlass/matmul/matmul_type.hpp"
-#include "actlass/layout/layout.hpp"
+#include "acot/acot.hpp"
+#include "acot/arch/arch.hpp"
+#include "acot/matmul/block/block_mmad.hpp"
+#include "acot/matmul/block/block_swizzle.hpp"
+#include "acot/matmul/dispatch_policy.hpp"
+#include "acot/matmul/kernel/matmul_universal.hpp"
+#include "acot/matmul/matmul_type.hpp"
+#include "acot/layout/layout.hpp"
 
-using namespace actlass;
+using namespace acot;
 
 template <
     class LayoutA,
     class LayoutB,
     class LayoutC
 >
-ACTLASS_GLOBAL
+ACOT_GLOBAL
 void BasicMatmul(
     MatmulCoord problemShape,
     GM_ADDR gmA, LayoutA layoutA,

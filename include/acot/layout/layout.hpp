@@ -7,25 +7,12 @@
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
  * See LICENSE in the root of the software repository for the full text of the License.
  */
-#ifndef EXAMPLES_COMMON_GOLDEN_FILL_DATA_HPP
-#define EXAMPLES_COMMON_GOLDEN_FILL_DATA_HPP
 
-#include <vector>
-#include <cstdlib>
-#include <ctime>
+#ifndef ACOT_LAYOUT_LAYOUT_HPP
+#define ACOT_LAYOUT_LAYOUT_HPP
 
-namespace acot::golden {
+#include "acot/acot.hpp"
+#include "acot/layout/matrix.hpp"
+#include "acot/layout/vector.hpp"
 
-template <class Element>
-void FillRandomData(std::vector<Element>& data, float low, float high, uint64_t seed = time(0))
-{
-    srand(seed);
-    for (uint64_t i = 0; i < data.size(); ++i) {
-        Element randomValue = static_cast<Element>(static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
-        data[i] = low + randomValue * (high - low);
-    }
-}
-
-} // namespace acot::golden
-
-#endif // EXAMPLES_COMMON_GOLDEN_FILL_DATA_HPP
+#endif  // ACOT_LAYOUT_LAYOUT_HPP

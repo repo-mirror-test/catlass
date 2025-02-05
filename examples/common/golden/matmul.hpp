@@ -12,9 +12,9 @@
 
 #include <vector>
 
-#include "actlass/layout/layout.hpp"
+#include "acot/layout/layout.hpp"
 
-namespace actlass::golden {
+namespace acot::golden {
 
 // simple matmul
 template<class ElementA, class LayoutA, class ElementB, class LayoutB, class ElementGolden, class LayoutGolden>
@@ -131,6 +131,6 @@ void ComputeMatmulElemWiseAdd(
     }
 }
 
-} // namespace actlass::golden
+} // namespace acot::golden
 
 #endif // EXAMPLES_COMMON_GOLDEN_MATMUL_HPP

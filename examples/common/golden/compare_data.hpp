@@ -13,9 +13,9 @@
 #include <cmath>
 #include <vector>
 
-#include "actlass/matmul_coord.hpp"
+#include "acot/matmul_coord.hpp"
 
-namespace actlass::golden {
+namespace acot::golden {
 
 constexpr uint32_t COMPUTE_NUM_THRESHOLD = 2048;
 constexpr float RTOL_GENERAL = 1.0f / 256;
@@ -38,6 +38,6 @@ std::vector<uint64_t> CompareData(const std::vector<ElementResult>& result, cons
     return errorIndices;
 }
 
-}  // namespace actlass::golden
+}  // namespace acot::golden
 
 #endif  // EXAMPLES_COMMON_GOLDEN_COMPARE_DATA_HPP

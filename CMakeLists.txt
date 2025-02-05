@@ -7,7 +7,7 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 
 cmake_minimum_required(VERSION 3.15)
-project(actlass)
+project(acot)
 
 if(NOT DEFINED ENV{ASCEND_HOME_PATH})
     message(FATAL_ERROR "Cannot find ASCEND_HOME_PATH, please run set_env.sh.")
