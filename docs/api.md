@@ -1,22 +1,22 @@
-# ACOT Matmul API
+# AscendC Template Matmul API
 
-ACOT针对NPU上不同层级上执行的矩阵乘累加（MMAD）操作，提供了一个统一的编程模型。ACOT的Matmul API对应于以下分层，由高到低分别是：
+AscendC Template针对NPU上不同层级上执行的矩阵乘累加（MMAD）操作，提供了一个统一的编程模型。AscendC Template的Matmul API对应于以下分层，由高到低分别是：
 ![image](images/api_level.png) 
 
 
-# ACOT Matmul模型
-ACOT基于上述的分层结构，实现了经典“三层嵌套循环”的矩阵乘算法。
+# AscendC Template Matmul模型
+AscendC Template基于上述的分层结构，实现了经典“三层嵌套循环”的矩阵乘算法。
 
 以下伪代码描述了针对像`mmad`这样的单核内同步矩阵乘法指令的Matmul 内核的模型。整个算子被称为“Matmul”，这是伪代码，仅用于说明哪些层次的部分对应于矩阵乘的内部或外部循环。
 
 
 ```c++
-// acot::matmul::kernel::MatmulUniversal: BlockTileM 和 BlockTileN 循环
+// AscendCT::gemm::kernel::BasicMatmul: BlockTileM 和 BlockTileN 循环
 // 在AICores上并行
 for (int block_m = 0; block_m < MatmulM; block_m += BlockTileM) {
   for (int block_n = 0; block_n < MatmulN; block_n += BlockTileN) {
 
-    // acot::matmul::block::BlockMmad: 在k-tile上迭代的主循环
+    // AscendCT::gemm::block::BlockMmad: 在k-tile上迭代的主循环
     // 在这个阶段没有循环展开
     for (int k_tile = 0; k_tile < MatmulK; k_tile++) {
 
@@ -39,21 +39,21 @@ for (int block_m = 0; block_m < MatmulM; block_m += BlockTileM) {
 在两重嵌套的 `for`循环内部，将全局内存分片，然后将分片搬运到更“局部”的内存（如L1 Buffer或L0 Buffer）并执行MMAD计算。这些分片拷贝和分片MMAD计算的迭代通常是完全静态的，并且完全展开。
 
 
-# ACOT Matmul组件
+# AscendC Template Matmul组件
 
 
-ACOT使用以下组件表达上述循环嵌套，这些组件针对数据类型、数据排布和数学指令进行特化。
+AscendC Template使用以下组件表达上述循环嵌套，这些组件针对数据类型、数据排布和数学指令进行特化。
 
 
-| API 层级             | API 类 和/或 函数 名称                                                                            |
-| ---                  |--------------------------------------------------------------------------------------------|
-| Device               | `acot::matmul::device::MatmulUniversalAdapter`                                             |
-| Kernel               | `acot::matmul::kernel::MatmulUniversal`                                                 |
-| Block           | `acot::matmul::block:BlockMmad` <br /> `acot::epilogue::block::BlockEpilogue` <br /> |
-| Tile (MMAD and Copy) | `TileMmad` and `TileCopy` <br />                                                           |
-| Basic                 | `AscendC::Mmad` and `AscendC::DataCopy`                                                    |
+| API 层级             | API 类 和/或 函数 名称                   |
+| ---                  | ---                                               |
+| Device               | `AscendCT::gemm::device::MatmulUniversalAdapter`     |
+| Kernel               | `AscendCT::gemm::kernel::BasicMatmul`            |
+| Block           | `AscendCT::gemm::block:BlockMmad` <br /> `AscendCT::epilogue::block::BlockEpilogue` <br />|
+| Tile (MMAD and Copy) | `TileMmad` and `TileCopy` <br /> |
+| Basic                 | `AscendC::Mmad` and `AscendC::DataCopy` |
 
-在ACOT 中，我们通过首先在Kernel层组合Block主循环和Block后处理，然后用主机侧适配器包装它们来组装内核。
+在AscendC Template 中，我们通过首先在Kernel层组合Block主循环和Block后处理，然后用主机侧适配器包装它们来组装内核。
 
 
 用户使用这些组件组装内核时，需要通过以下顺序实例化。  
@@ -61,20 +61,20 @@ ACOT使用以下组件表达上述循环嵌套，这些组件针对数据类型�
 2. 将Blocks组合在一起构建成Kernel。  
 3. 用Device层适配器包装Kernel。  
 
-这个顺序也反映在ACOT的示例中[examples/00_basic_matmul](../examples/00_basic_matmul)，如下文摘录所示。
+这个顺序也反映在AscendC Template的示例中[examples/00_basic_matmul](../examples/00_basic_matmul)，如下文摘录所示。
 
 
 ```c++
 // 第一步: 创建所需的特化block层mmad
 // 参数
-using DispatchPolicy = matmul::MmadAtlasA2Pingpong<true>;
+using DispatchPolicy = gemm::MmadAtlasA2Pingpong<true>;
 using L1TileShape = MatmulShape<128, 256, 256>;
 using L0TileShape = MatmulShape<128, 256, 64>;
-using AType = matmul::MatmulType<ElementA, LayoutA>;
-using BType = matmul::MatmulType<ElementB, LayoutB>;
-using CType = matmul::MatmulType<ElementC, LayoutC>;
+using AType = gemm::MatmulType<ElementA, LayoutA>;
+using BType = gemm::MatmulType<ElementB, LayoutB>;
+using CType = gemm::MatmulType<ElementC, LayoutC>;
 
-using BlockMmad = matmul::block::BlockMmad<DispatchPolicy,
+using BlockMmad = gemm::block::BlockMmad<DispatchPolicy,
     L1TileShape,
     L0TileShape,
     AType,
@@ -85,14 +85,14 @@ using BlockMmad = matmul::block::BlockMmad<DispatchPolicy,
 using BlockEpilogue = void;
 
 // 第三步：指定计算时的数据走位方式
-using TileScheduler = typename matmul::block::MatmulIdentityBlockSwizzle<>;
+using TileScheduler = typename gemm::block::MatmulIdentityBlockSwizzle<>;
 
 
 // 第四步：在kernel层将mmad和后处理组合到一起
-using MatmulKernel = matmul::kernel::MatmulUniversal<BlockMmad, BlockEpilogue, TileScheduler>;
+using MatmulKernel = gemm::kernel::BasicMatmul<BlockMmad, BlockEpilogue, TileScheduler>;
 
 // 第四步：将kernel放入device适配器中，host侧处理kernel使用
-using MatmulHandle = acot::matmul::device::MatmulUniversalAdapter<MatmulKernel>;
+using MatmulHandle = AscendCT::gemm::device::MatmulUniversalAdapter<MatmulKernel>;
 ```
 
 
@@ -111,13 +111,13 @@ Block中的不同硬件流水线（例如，MTE1、MTE2或FixPipe）提供不同
 
 ### Block Mmad
 
-`acot::matmul::block::BlockMmad`Block矩阵乘累加（MMAD）主循环的主要接口。
+`AscendCT::gemm::block::BlockMmad`Block矩阵乘累加（MMAD）主循环的主要接口。
 
 The `BlockMmad` 类定义在头文件中
-[include/acot/matmul/block/block_mmad.hpp](../include/acot/matmul/block/block_mmad.hpp).
+[include/AscendCT/gemm/block/block_mmad.hpp](../include/AscendCT/gemm/block/block_mmad.hpp).
 
 ```c++
-namespace acot::matmul::block {
+namespace AscendCT::gemm::block {
 ////////////////////////////////////////////////////////////////////
 
 template <
@@ -128,14 +128,14 @@ template <
     class BType,
     class CType,
     class BiasType = void,
-    class TileCopy = matmul::tile::TileCopy<typename DispatchPolicy::ArchTag, AType, BType, CType, BiasType>,
-    class TileMmad = matmul::tile::TileMmad<typename DispatchPolicy::ArchTag, AType, BType, BiasType>
+    class TileCopy = gemm::tile::TileCopy<typename DispatchPolicy::ArchTag, AType, BType, CType, BiasType>,
+    class TileMmad = gemm::tile::TileMmad<typename DispatchPolicy::ArchTag, AType, BType, BiasType>
 >
 struct BlockMmad {};
 
 ////////////////////////////////////////////////////////////////////
 
-} // namespace acot::matmul::block
+} // namespace AscendCT::gemm::block
 
 ```
 
@@ -149,7 +149,7 @@ struct BlockMmad {};
 ### Block Dispatch Policies
 
 `BlockMmad`的实现不是通用的。相反，它们必须针对每个算法和NPU架构特例化。用户可以通过选择与该特例化匹配的模板参数来调度到`BlockMmad`的特例化。
-ACOT 采用基于标签的调度策略类型来特例化Block层Mmad实现，并为其提供调优能力。
+AscendC Template 采用基于标签的调度策略类型来特例化Block层Mmad实现，并为其提供调优能力。
 
 以下给出了一个Dispatch Policy的样例，对应AtlasA2的架构下，采用L1 Buffer上pingpong Buffer，启用unitflag优化：
 
@@ -178,12 +178,12 @@ struct MmadAtlasA2Pingpong {
 ### Epilogue
 
 
-尾处理实现了涉及输出矩阵的逐元素操作。用户可以提供自定义的尾处理，或者使用标准尾处理之一。这些尾处理位于目录include/acot/epilogue/block/中，包括像`acot::epilogue::block::BlockEpilogue`这样的类。ACOT提供的尾处理不在include/acot/matmul目录下，也不在`acot::matmul`命名空间中，因为它们可以用于除Matmul之外的其他计算。
+尾处理实现了涉及输出矩阵的逐元素操作。用户可以提供自定义的尾处理，或者使用标准尾处理之一。这些尾处理位于目录include/AscendCT/epilogue/block/中，包括像`AscendCT::epilogue::block::BlockEpilogue`这样的类。AscendC Template提供的尾处理不在include/AscendCT/gemm目录下，也不在`AscendCT::gemm`命名空间中，因为它们可以用于除Matmul之外的其他计算。
 
 
 ## Kernel API
 
-Kernel对应了所有Block在NPU上执行逻辑的集合。Kernel层承MatmulUniversal担以下功能：
+Kernel对应了所有Block在NPU上执行逻辑的集合。Kernel层BasicMatmul承担以下功能：
 - 对包含的不同Block的逻辑进行组合，加入必要的同步逻辑。 
 - 不同Block和处理全局内存上数据的对应关系（Swizzling）。
 - 将输入数据在Block粒度分片。
@@ -191,21 +191,21 @@ Kernel对应了所有Block在NPU上执行逻辑的集合。Kernel层承MatmulUni
 Kernel层API是设备侧调用的入口，也是融合连续矩阵乘、尾处理或其他操作的组合点。
 
 Kernel API 入口在
-`acot::matmul::kernel::MatmulUniversal`, 位于头文件
-[include/acot/matmul/kernel/matmul_universal.hpp](/include/acot/matmul/kernel/matmul_universal.hpp).
-`MatmulUniversal` 是一个无状态的通用的设备侧内核，实现的矩阵乘运算由两部分组成：
+`AscendCT::gemm::kernel::BasicMatmul`, 位于头文件
+[include/AscendCT/gemm/kernel/basic_matmul.hpp](/include/AscendCT/gemm/kernel/basic_matmul.hpp).
+`BasicMatmul` 是一个无状态的设备侧内核，实现的矩阵乘运算由两部分组成：
 * Block Mmad
 * Block Epilogue
 
 ```cpp
-namespace acot::matmul::kernel {
+namespace AscendCT::gemm::kernel {
 template <
   class BlockMmad_,
   class BlockEpilogue_,
   class TileScheduler_
 >
-class MatmulUniversal;
-} // namespace acot::matmul::kernel
+class BasicMatmul;
+} // namespace AscendCT::gemm::kernel
 ```
 
 注：无状态指调用者管理着内核的状态。例如，上述描述的设备API。内核仅接收输入和输出参数 (`Params`).
@@ -219,15 +219,15 @@ class MatmulUniversal;
 
 Device层是Host侧调用的入口，在这一层屏蔽调用Device侧函数的差异。用户定义完Kernel结构之后放入Device层模板，便可以执行算子。
 ```
-using BlockMmad = matmul::block::BlockMmad<DispatchPolicy, L1TileShape, L0TileShape, AType, BType, CType>;
+using BlockMmad = gemm::block::BlockMmad<DispatchPolicy, L1TileShape, L0TileShape, AType, BType, CType>;
 using BlockEpilogue = void;
-using TileScheduler = typename matmul::block::MatmulIdentityBlockSwizzle<>;
+using TileScheduler = typename gemm::block::MatmulIdentityBlockSwizzle<>;
 
 // kernel
-using MatmulKernel = matmul::kernel::MatmulUniversal<BlockMmad, BlockEpilogue, TileScheduler>;
+using MatmulKernel = gemm::kernel::BasicMatmul<BlockMmad, BlockEpilogue, TileScheduler>;
 
 // device
-using MatmulUniversalAdapter = matmul::device::MatmulUniversalAdapter<MatmulKernel>;
+using MatmulUniversalAdapter = gemm::device::MatmulUniversalAdapter<MatmulKernel>;
 MatmulUniversalAdapter matmulAdapter;
 // args为维度信息等参数的封装结构体
 matmulAdapter(args, workspace, stream);

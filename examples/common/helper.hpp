@@ -34,4 +34,14 @@
         }                                                                                    \
     } while (0)
 
+int Gcd(int a, int b)
+{
+    return b == 0 ? a : Gcd(b, a % b);
+}
+
+int Lcm(int a, int b)
+{
+    return abs(a * b) / Gcd(a, b);
+}
+
 #endif  // EXAMPLES_COMMON_HELPER_HPP

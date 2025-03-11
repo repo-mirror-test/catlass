@@ -12,24 +12,26 @@
 
 #include "helper.hpp"
 #include "golden.hpp"
+#include "fp16_t.h"
 
-#include "acot/acot.hpp"
-#include "acot/arch/arch.hpp"
-#include "acot/matmul/block/block_mmad.hpp"
-#include "acot/matmul/block/block_swizzle.hpp"
-#include "acot/matmul/dispatch_policy.hpp"
-#include "acot/matmul/kernel/matmul_universal.hpp"
-#include "acot/matmul/matmul_type.hpp"
-#include "acot/layout/layout.hpp"
+#include "AscendCT/AscendCT.hpp"
+#include "AscendCT/arch/arch.hpp"
+#include "AscendCT/gemm/block/block_mmad.hpp"
+#include "AscendCT/gemm/block/block_swizzle.hpp"
+#include "AscendCT/gemm/dispatch_policy.hpp"
+#include "AscendCT/gemm/kernel/basic_matmul.hpp"
+#include "AscendCT/gemm/matmul_type.hpp"
+#include "AscendCT/layout/layout.hpp"
 
-using namespace acot;
+using namespace AscendCT;
+using fp16_t = op::fp16_t;
 
 template <
     class LayoutA,
     class LayoutB,
     class LayoutC
 >
-ACOT_GLOBAL
+ASCENDCT_GLOBAL
 void BasicMatmul(
     MatmulCoord problemShape,
     GM_ADDR gmA, LayoutA layoutA,
@@ -38,23 +40,23 @@ void BasicMatmul(
 )
 {
     using ArchTag = arch::AtlasA2;
-    using DispatchPolicy = matmul::MmadAtlasA2Pingpong<true>;
+    using DispatchPolicy = gemm::MmadAtlasA2Pingpong<true>;
     using L1TileShape = MatmulShape<128, 256, 256>;
     using L0TileShape = MatmulShape<128, 256, 64>;
 
-    using AType = matmul::MatmulType<half, LayoutA>;
-    using BType = matmul::MatmulType<half, LayoutB>;
-    using CType = matmul::MatmulType<half, LayoutC>;
+    using AType = gemm::MatmulType<half, LayoutA>;
+    using BType = gemm::MatmulType<half, LayoutB>;
+    using CType = gemm::MatmulType<half, LayoutC>;
 
-    using BlockMmad = matmul::block::BlockMmad<DispatchPolicy, L1TileShape, L0TileShape, AType, BType, CType>;
+    using BlockMmad = gemm::block::BlockMmad<DispatchPolicy, L1TileShape, L0TileShape, AType, BType, CType>;
     using BlockEpilogue = void;
 
     if (problemShape.m() > problemShape.n()) {
         // Swizzle offset is 3 and direction is 0.
-        using TileScheduler = typename matmul::block::MatmulIdentityBlockSwizzle<3, 0>;
+        using BlockScheduler = typename gemm::block::MatmulIdentityBlockSwizzle<3, 0>;
 
         // kernel level
-        using MatmulKernel = matmul::kernel::MatmulUniversal<BlockMmad, BlockEpilogue, TileScheduler>;
+        using MatmulKernel = gemm::kernel::BasicMatmul<BlockMmad, BlockEpilogue, BlockScheduler>;
 
         typename MatmulKernel::Params params{problemShape, gmA, layoutA, gmB, layoutB, gmC, layoutC};
 
@@ -63,10 +65,10 @@ void BasicMatmul(
         matmul(params);
     } else {
         // Swizzle offset is 3 and direction is 1.
-        using TileScheduler = typename matmul::block::MatmulIdentityBlockSwizzle<3, 1>;
+        using BlockScheduler = typename gemm::block::MatmulIdentityBlockSwizzle<3, 1>;
 
         // kernel level
-        using MatmulKernel = matmul::kernel::MatmulUniversal<BlockMmad, BlockEpilogue, TileScheduler>;
+        using MatmulKernel = gemm::kernel::BasicMatmul<BlockMmad, BlockEpilogue, BlockScheduler>;
 
         typename MatmulKernel::Params params{problemShape, gmA, layoutA, gmB, layoutB, gmC, layoutC};
 
@@ -125,18 +127,18 @@ void Run(Options const &options)
     size_t lenB = static_cast<size_t>(k) * n;
     size_t lenC = static_cast<size_t>(m) * n;
 
-    size_t sizeA = lenA * sizeof(half);
-    size_t sizeB = lenB * sizeof(half);
-    size_t sizeC = lenC * sizeof(half);
+    size_t sizeA = lenA * sizeof(fp16_t);
+    size_t sizeB = lenB * sizeof(fp16_t);
+    size_t sizeC = lenC * sizeof(fp16_t);
 
     layout::RowMajor layoutA{m, k};
     layout::RowMajor layoutB{k, n};
     layout::RowMajor layoutC{m, n};
 
-    std::vector<half> hostA(lenA);
-    std::vector<half> hostB(lenB);
-    golden::FillRandomData(hostA, -5.0f, 5.0f);
-    golden::FillRandomData(hostB, -5.0f, 5.0f);
+    std::vector<fp16_t> hostA(lenA);
+    std::vector<fp16_t> hostB(lenB);
+    golden::FillRandomData<fp16_t>(hostA, -5.0f, 5.0f);
+    golden::FillRandomData<fp16_t>(hostB, -5.0f, 5.0f);
 
     uint8_t *deviceA{nullptr};
     ACL_CHECK(aclrtMalloc(reinterpret_cast<void **>(&deviceA), sizeA, ACL_MEM_MALLOC_HUGE_FIRST));
@@ -156,7 +158,7 @@ void Run(Options const &options)
         options.problemShape, deviceA, layoutA, deviceB, layoutB, deviceC, layoutC);
     ACL_CHECK(aclrtSynchronizeStream(stream));
 
-    std::vector<half> hostC(lenC);
+    std::vector<fp16_t> hostC(lenC);
     ACL_CHECK(aclrtMemcpy(hostC.data(), sizeC, deviceC, sizeC, ACL_MEMCPY_DEVICE_TO_HOST));
 
     std::vector<float> hostGolden(lenC);

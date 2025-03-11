@@ -7,19 +7,18 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 
 cmake_minimum_required(VERSION 3.15)
-project(acot)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(AscendCT)
 
 if(NOT DEFINED ENV{ASCEND_HOME_PATH})
     message(FATAL_ERROR "Cannot find ASCEND_HOME_PATH, please run set_env.sh.")
 else()
     set(ASCEND_HOME_PATH $ENV{ASCEND_HOME_PATH})
 endif()
-set(CMAKE_CCEC_COMPILER ccec)
+set(CMAKE_CCEC_COMPILER bisheng)
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-
-
 
 add_subdirectory(examples)
