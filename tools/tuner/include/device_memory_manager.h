@@ -19,9 +19,11 @@
 #include "m_t_var.h"
 
 #include <acl/acl.h>
-#include <runtime/rt_ffts.h>
 
 namespace Catlass {
+
+extern "C" int rtGetC2cCtrlAddr(uint64_t *, uint32_t *);
+extern "C" int rtGetVisibleDeviceIdByLogicDeviceId(const int32_t, int32_t * const);
 
 #define ACL_CHECK(status, func)                                                 \
     do {                                                                        \
@@ -34,8 +36,8 @@ namespace Catlass {
 // Macro function for unwinding rt errors.
 #define RT_CHECK(status, func)                                                               \
     do {                                                                                     \
-        rtError_t error = status;                                                            \
-        if (error != RT_ERROR_NONE) {                                                        \
+        int32_t error = status;                                                            \
+        if (error != 0) {                                                        \
             LOGE("%s:%d call " func " rtError: %d", __FILE__, __LINE__, error);              \
         }                                                                                    \
     } while (0)

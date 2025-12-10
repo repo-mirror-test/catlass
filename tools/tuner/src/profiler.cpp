@@ -10,8 +10,8 @@
  
 #include "profiler.h"
 #include <algorithm>
-#include <runtime/dev.h>
 #include "log.h"
+#include "device_memory_manager.h"
 
 namespace {
 constexpr uint32_t STARS_ENABLE_FLAG = 1;
@@ -393,7 +393,7 @@ bool ProfileDataHandler::SetDeviceId(int32_t deviceId)
     auto env = getenv(VIS);
     if (env) {
         auto error = rtGetVisibleDeviceIdByLogicDeviceId(deviceId, &convertedId);
-        if (error != RT_ERROR_NONE) {
+        if (error != 0) {
             LOGE("Call rtGetVisibleDeviceIdByLogicDeviceId failed, error: %d. Please disable %s or try again.",
                  error, VIS);
             return false;
