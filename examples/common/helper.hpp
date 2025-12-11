@@ -13,8 +13,9 @@
 
 #include <iostream>
 #include <acl/acl.h>
-#include <runtime/rt_ffts.h>
 #include "tiling/platform/platform_ascendc.h"
+
+extern "C" int rtGetC2cCtrlAddr(uint64_t *, uint32_t *);
 
 // Macro function for unwinding acl errors.
 #define ACL_CHECK(status)                                                                    \
@@ -28,8 +29,8 @@
 // Macro function for unwinding rt errors.
 #define RT_CHECK(status)                                                                     \
     do {                                                                                     \
-        rtError_t error = status;                                                            \
-        if (error != RT_ERROR_NONE) {                                                        \
+        int32_t error = status;                                                            \
+        if (error != 0) {                                                        \
             std::cerr << __FILE__ << ":" << __LINE__ << " rtError:" << error << std::endl;   \
         }                                                                                    \
     } while (0)
