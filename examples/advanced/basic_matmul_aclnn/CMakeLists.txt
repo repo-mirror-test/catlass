@@ -19,8 +19,8 @@ if(NOT EXISTS ${MSOPGEN_PROJECT_SOURCE_DIR})
         COMMAND chmod 755 ${CMAKE_CURRENT_BINARY_DIR}/tmp
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
-    # copy json configuration file
-    file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/catlass_basic_matmul.json ${CMAKE_CURRENT_BINARY_DIR}/tmp/catlass_basic_matmul.json)
+    # copy json configuration file (use file(COPY ...) instead of file(COPY_FILE ...) for CMake <3.21)
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/catlass_basic_matmul.json DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/tmp)
     # msopgen can only generate from a 644 json configuration file
     execute_process(
         COMMAND chmod 644 ${CMAKE_CURRENT_BINARY_DIR}/tmp/catlass_basic_matmul.json

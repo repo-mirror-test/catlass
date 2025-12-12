@@ -27,7 +27,7 @@ set(CMAKE_ASCEND_STANDARD ${CMAKE_CXX_STANDARD})
 
 set(CMAKE_ASCEND03_STANDARD_COMPILE_OPTION "-std=c++03")
 set(CMAKE_ASCEND03_EXTENSION_COMPILE_OPTION "-std=gnu++03")
-__compiler_clang_cxx_standards(ASCEND)
+# __compiler_clang_cxx_standards(ASCEND)
 
 set(CMAKE_INCLUDE_FLAG_ASCEND "-I")
 set(_CMAKE_COMPILE_AS_ASCEND_FLAG "-x cce")
