@@ -109,8 +109,7 @@ public:
     static_assert(L1TileShape::M == L0TileShape::M && L1TileShape::N == L0TileShape::N,
         "The situation where the basic blocks of L1 and L0 differ on the m and n axes is not supported yet");
     static_assert(L0TileShape::K <= L1TileShape::K, "L0TileShape::K cannot exceed L1TileShape::K");
-    static_assert(!(std::is_same_v<ElementA, bfloat16_t> || std::is_same_v<ElementB, bfloat16_t> || std::is_same_v<ElementC, bfloat16_t>
-        || std::is_same_v<ElementBias, bfloat16_t>), "block_mmad_pingpong_bias does not support dataType of bfloat16 yet!");
+    static_assert(!std::is_same_v<ElementBias, bfloat16_t>, "Bias does not support bfloat16 yet");
 
     /// Construct
     CATLASS_DEVICE
