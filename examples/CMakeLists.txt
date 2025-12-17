@@ -27,9 +27,13 @@ endif()
 add_compile_options(
     $<$<COMPILE_LANGUAGE:ASCEND>:-Wno-macro-redefined>
     $<$<COMPILE_LANGUAGE:ASCEND>:-Wno-ignored-attributes>
-
     "SHELL:$<$<COMPILE_LANGUAGE:ASCEND>:-mllvm -cce-aicore-addr-transform>"
+    # these options may be removed after CANN 8.5.0
+    $<$<COMPILE_LANGUAGE:ASCEND>:-Wno-unused-value>
 )
+
+# these options may be removed after CANN 8.5.0
+add_link_options($<$<COMPILE_LANGUAGE:ASCEND>:-Wno-unused-command-line-argument>)
 
 # compile options for debug features
 if(DEFINED ENABLE_PRINT AND ENABLE_PRINT)

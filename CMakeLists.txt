@@ -42,6 +42,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     add_link_options(-s)
 endif()
 
+add_compile_definitions(CATLASS_BUILD_LEGACY)
+
 add_subdirectory(examples)
 add_subdirectory(tools)
 

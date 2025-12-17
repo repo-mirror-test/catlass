@@ -39,4 +39,8 @@ constexpr uint32_t BYTE_PER_BLK_FP = 128;  /// datablock size of A1->C2PiPE2GM
 
 } // namespace Catlass
 
+#if defined(__CCE__) && defined(L2_CACHE_HINT) && defined(CATLASS_BUILD_LEGACY)
+inline __gm__ struct OpSystemRunCfg g_opSystemRunCfg{Catlass::L2_OFFSET};
+#endif
+
 #endif // CATLASS_CATLASS_HPP

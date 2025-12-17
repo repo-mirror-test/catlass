@@ -11,19 +11,11 @@
 #ifndef CATLASS_DEBUG_HPP
 #define CATLASS_DEBUG_HPP
 
-#ifdef ASCENDC_MODULE_OPERATOR_H
-#undef inline
-#endif
 #include <iostream>
 #include <sstream>
 #include <functional>
-#ifdef ASCENDC_MODULE_OPERATOR_H
-#define inline __inline__ __attribute__((always_inline))
-#endif
-
 
 #include <acl/acl.h>
-#include <runtime/rt_ffts.h>
 
 #define SINGLE_CORE_DUMPSIZE (1024 * 1024)
 // 75 is from AscendC host stub
@@ -50,9 +42,9 @@ inline void aclCheck(aclError status, LogFuncType logFunc = [](const char *logSt
  * @param logFunc Log function, which receives a C-Style string.
  * @return
  */
-inline void rtCheck(rtError_t status, LogFuncType logFunc = [](const char *logStrPtr) { std::cerr << logStrPtr; })
+inline void rtCheck(int status, LogFuncType logFunc = [](const char *logStrPtr) { std::cerr << logStrPtr; })
 {
-    if (status != RT_ERROR_NONE) {
+    if (status != 0) {
         std::stringstream ss;
         ss << "RtError: " << status;
         logFunc(ss.str().c_str());

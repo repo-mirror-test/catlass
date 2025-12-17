@@ -11,7 +11,6 @@
 #include "catlass/gemm/kernel/optimized_matmul.hpp"
 
 #include <acl/acl.h>
-#include <runtime/rt_ffts.h>
 
 #include "catlass/arch/arch.hpp"
 #include "catlass/catlass.hpp"
@@ -99,7 +98,7 @@ void OptimizedMatmulImpl(const uint32_t blockNum, aclrtStream stream, const Kern
     // Prepare FFTS address
     uint32_t fftsLen{0};
     uint64_t fftsAddr{0};
-    rtCheck(rtGetC2cCtrlAddr(&fftsAddr, &fftsLen));
+    RT_CHECK(rtGetC2cCtrlAddr(&fftsAddr, &fftsLen));
     GemmCoord problemShape{kernelInfo.m, kernelInfo.n, kernelInfo.k};
     LayoutA layoutA{kernelInfo.m, kernelInfo.k};
     LayoutB layoutB{kernelInfo.k, kernelInfo.n};

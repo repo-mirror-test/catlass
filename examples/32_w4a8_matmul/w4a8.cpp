@@ -14,14 +14,12 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
-#include <fstream>
 #include <cstdlib>
 #include <cmath>
 #include <string>
 
 #include <tiling/platform/platform_ascendc.h>
 #include <acl/acl.h>
-#include <runtime/rt_ffts.h>
 
 #include "catlass/catlass.hpp"
 #include "catlass/arch/arch.hpp"

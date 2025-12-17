@@ -4,8 +4,9 @@
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
- * See LICENSE in the root of the software repository for the full text of the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. See LICENSE in the root of
+ * the software repository for the full text of the License.
  */
 
 #ifndef SHARED_LIB_COMMON_COMMON_HPP
@@ -60,7 +61,8 @@ void RunAdapter(
     aclrtStream stream,
     uint32_t aicCoreNum,
     uint64_t fftsAddr = 0
-) {
+)
+{
     size_t sizeWorkspace = matmulOp.GetWorkspaceSize(args);
     uint8_t *deviceWorkspace = nullptr;
     if (sizeWorkspace > 0) {
@@ -74,7 +76,8 @@ void RunAdapter(
     }
 }
 
-inline bool IsNeedPadding(layout::RowMajor layout, uint32_t align) {
+inline bool IsNeedPadding(layout::RowMajor layout, uint32_t align)
+{
     // If the stride is greater than 65536, padding is required to reduce the stride.
     if (layout.stride(0) < 65536) {
         return layout.stride(0) % align != 0;
@@ -83,7 +86,8 @@ inline bool IsNeedPadding(layout::RowMajor layout, uint32_t align) {
     }
 }
 
-inline bool IsNeedPadding(layout::ColumnMajor layout, uint32_t align) {
+inline bool IsNeedPadding(layout::ColumnMajor layout, uint32_t align)
+{
     // If the stride is greater than 65536, padding is required to reduce the stride.
     if (layout.stride(1) < 65536) {
         return layout.stride(1) % align != 0;
@@ -92,13 +96,27 @@ inline bool IsNeedPadding(layout::ColumnMajor layout, uint32_t align) {
     }
 }
 
-inline bool IsNeedPadding(layout::zN layout, uint32_t align) {
+inline bool IsNeedPadding(layout::zN layout, uint32_t align)
+{
     return false;
 }
 
-inline bool IsNeedPadding(layout::nZ layout, uint32_t align) {
+inline bool IsNeedPadding(layout::nZ layout, uint32_t align)
+{
     return false;
 }
 
 } // namespace CatlassKernel
+
+extern "C" int rtGetC2cCtrlAddr(uint64_t *, uint32_t *);
+
+// Macro function for unwinding rt errors.
+#define RT_CHECK(status)                                                                                               \
+    do {                                                                                                               \
+        int32_t error = status;                                                                                        \
+        if (error != 0) {                                                                                              \
+            std::cerr << __FILE__ << ":" << __LINE__ << " rtError:" << error << std::endl;                             \
+        }                                                                                                              \
+    } while (0)
+
 #endif

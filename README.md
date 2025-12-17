@@ -1,6 +1,7 @@
 # CATLASS
 
 ---
+
 ### Latest News
 
 - [2025/10] 社区版[v1.2.0](https://gitcode.com/cann/catlass/releases/v1.2.0)发布，新增[Matmul算子泛化](https://gitcode.com/cann/catlass/tree/v1.2.0/examples/102_dynamic_optimized_matmul/README.md)等示例
@@ -21,21 +22,23 @@ CATLASS(**CA**NN **T**emplates for **L**inear **A**lgebra **S**ubroutine**s**)�
 ## ⚡️ 快速上手
 
 为快速体验CATLASS的算子开发与使用，请参考下述内容。
- - [快速入门](./docs/quickstart.md)：快速上手模板库使用，编译执行已有的算子样例。
- - [基础开发指南](./docs/dev_guide.md)：以基础Matmul算子为例，基于CATLASS的算子开发实践；
- - [开发者实践](./docs/tutorials.md): 从算子编写至编译测试，再到Tiling调优与算子优化，从新手到进阶的实践示例。
+
+- [快速入门](./docs/quickstart.md)：快速上手模板库使用，编译执行已有的算子样例。
+- [基础开发指南](./docs/dev_guide.md)：以基础Matmul算子为例，基于CATLASS的算子开发实践；
+- [开发者实践](./docs/tutorials.md): 从算子编写至编译测试，再到Tiling调优与算子优化，从新手到进阶的实践示例。
 
 ## 📚 进阶参考
 
 下述资料可助力您深入开展CATLASS算子的开发与调优，实现更优性能的GEMM类算子。
- - [CATLASS API](./docs/contents/advanced/api.md): 介绍CATLASS的分层特征与通用矩阵乘法GEMM API。
- - [CATLASS性能调测](./docs/evaluation_collections.md): 汇总CATLASS工程开发中的调测办法，有助于消除漏洞，分析性能的瓶颈点。
- - [CATLASS进阶实践](./docs/advanced_collections.md): 汇总CATLASS的进阶知识，如Tiling调参方法、Dispatch策略等，实现更高性能。
 
+- [CATLASS API](./docs/contents/advanced/api.md): 介绍CATLASS的分层特征与通用矩阵乘法GEMM API。
+- [CATLASS性能调测](./docs/evaluation_collections.md): 汇总CATLASS工程开发中的调测办法，有助于消除漏洞，分析性能的瓶颈点。
+- [CATLASS进阶实践](./docs/advanced_collections.md): 汇总CATLASS的进阶知识，如Tiling调参方法、Dispatch策略等，实现更高性能。
 
 ## 📁 目录结构说明
 
 关键目录如下，详细目录参见[项目目录](./docs/dir_structure.md)。
+
 ```bash
 catlass
 ├── cmake                     # cmake工程文件
@@ -62,13 +65,13 @@ catlass
 
 CATLASS所需的软硬件环境依赖如下：
 
- - 昇腾产品：[Atlas A2训练/推理产品](https://www.hiascend.com/document/detail/zh/AscendFAQ/ProduTech/productform/hardwaredesc_0001.html), [Atlas A3训练/推理产品](https://www.hiascend.com/document/detail/zh/AscendFAQ/ProduTech/productform/hardwaredesc_0001.html)
- - CPU架构：`aarch64`/`x86_64`
- - 系统：主流Linux(进行[兼容性查询](https://www.hiascend.com/hardware/compatibility))
- - 软件依赖：
-   + `gcc` >= 7.5, < 13.0
-   + `cmake` >= 3.22
-   + `python` >= 3.8, < 3.12
+- 昇腾产品：[Atlas A2训练/推理产品](https://www.hiascend.com/document/detail/zh/AscendFAQ/ProduTech/productform/hardwaredesc_0001.html), [Atlas A3训练/推理产品](https://www.hiascend.com/document/detail/zh/AscendFAQ/ProduTech/productform/hardwaredesc_0001.html)
+- CPU架构：`aarch64`/`x86_64`
+- 系统：主流Linux（进行[兼容性查询](https://www.hiascend.com/hardware/compatibility)）
+- 软件依赖：
+  - `gcc` >= 7.5, < 13.0
+  - `cmake` >= 3.16
+  - `python` >= 3.8, < 3.12
 
 不同CATLASS发行版可支持的硬件平台及所需的最低[CANN](https://www.hiascend.com/developer/download/community/result?module=cann)版本如下表：
 
@@ -86,8 +89,14 @@ CATLASS所需的软硬件环境依赖如下：
       </tr>
   </thead>
   <tbody style="text-align: center">
+  <tr>
+          <td><a href="https://gitcode.com/cann/catlass">当前提交</a>
+          <td>社区版<a href="https://www.hiascend.com/developer/download/community/result?module=cann&cann=8.2">8.2.RC1</a></td>
+          <td><a href="https://www.hiascend.com/document/detail/zh/AscendFAQ/ProduTech/productform/hardwaredesc_0001.html">Atlas A2训练/推理产品</a> <br>
+          <a href="https://www.hiascend.com/document/detail/zh/AscendFAQ/ProduTech/productform/hardwaredesc_0001.html">Atlas A3训练/推理产品</a></td>
+      </tr>
       <tr>
-          <td><a href="https://gitcode.com/cann/catlass/releases/v1.2.0">v1.2.0</a>(当前)~<a href="https://gitcode.com/cann/catlass/releases/v1.0.0">v1.0.0</a></td>
+          <td><a href="https://gitcode.com/cann/catlass/releases/v1.2.1">v1.2.1</a>~<a href="https://gitcode.com/cann/catlass/releases/v1.0.0">v1.0.0</a></td>
           <td>社区版<a href="https://www.hiascend.com/developer/download/community/result?module=cann&cann=8.2.RC1.alpha002">8.2.RC1.alpha002</a></td>
           <td><a href="https://www.hiascend.com/document/detail/zh/AscendFAQ/ProduTech/productform/hardwaredesc_0001.html">Atlas A2训练/推理产品</a> <br>
           <a href="https://www.hiascend.com/document/detail/zh/AscendFAQ/ProduTech/productform/hardwaredesc_0001.html">Atlas A3训练/推理产品</a></td>
@@ -95,9 +104,9 @@ CATLASS所需的软硬件环境依赖如下：
   </tbody>
 </table>
 
- - 对于某些调测工具，可能需要较上述更新的CANN版本，详情参考[调测工具文档](./docs/evaluation_collections.md)。
+- 对于某些调测工具，可能需要较上述更新的CANN版本，详情参考[调测工具文档](./docs/evaluation_collections.md)。
 
-下述环境经测试支持[当前CATLASS](https://gitcode.com/cann/catlass/releases/v1.2.0)构建：
+下述环境经测试支持[当前CATLASS](https://gitcode.com/cann/catlass)构建：
 
 <table style="width: 75%; margin: 0 auto;">
   <colgroup>
@@ -118,22 +127,27 @@ CATLASS所需的软硬件环境依赖如下：
   </thead>
   <tbody style="text-align: center">
       <tr>
-          <td>Ubuntu 22.04.5</td>
-          <td><code>8.2.RC1.alpha002</code></td>
+          <td>Ubuntu 20.04.5</td>
+          <td><code>8.2.RC1</code></td>
           <td><code>9.3</code></td>
+          <td><code>3.16</code></td>
+          <td><code>3.10</code></td>
+      </tr><tr>
+          <td>Ubuntu 22.04.5</td>
+          <td><code>8.2.RC1</code></td>
+          <td><code>11.3</code></td>
           <td><code>3.22</code></td>
           <td><code>3.10</code></td>
       </tr>
       <tr>
           <td>openEuler 22.03 SP4</td>
-          <td><code>8.2.RC1.alpha002</code></td>
+          <td><code>8.2.RC1</code></td>
           <td><code>10.3</code></td>
           <td><code>3.22</code></td>
           <td><code>3.10</code></td>
       </tr>
   </tbody>
 </table>
-
 
 ## 👥 合作贡献者
 

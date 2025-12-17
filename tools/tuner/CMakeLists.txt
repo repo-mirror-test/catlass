@@ -26,7 +26,7 @@ else()
     )
     link_directories(
         ${ASCEND_HOME_PATH}/lib64
-        ${ASCEND_HOME_PATH}/lib64/../devlib
+        ${ASCEND_HOME_PATH}/lib64/../devlib/linux/${CMAKE_SYSTEM_PROCESSOR}
     )
 endif()
 add_subdirectory(dfx_kernel)
