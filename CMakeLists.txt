@@ -14,6 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(ASCEND_CMAKE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 list(APPEND CMAKE_MODULE_PATH ${ASCEND_CMAKE_PATH})
 project(Catlass LANGUAGES ASCEND CXX)
+include(cmake/funcs.cmake)
 
 if(NOT DEFINED ENV{ASCEND_HOME_PATH})
     message(FATAL_ERROR "Cannot find ASCEND_HOME_PATH, please run set_env.sh.")

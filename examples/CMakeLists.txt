@@ -23,6 +23,9 @@ if(CATLASS_BISHENG_ARCH STREQUAL "a2" OR CATLASS_BISHENG_ARCH STREQUAL "a3")
     )
 endif()
 
+determine_npu_model(NPU_MODEL CATLASS_BISHENG_ARCH)
+message("NPU MODEL: ${NPU_MODEL}")
+
 # common compile options
 add_compile_options(
     $<$<COMPILE_LANGUAGE:ASCEND>:-Wno-macro-redefined>
@@ -44,7 +47,7 @@ macro(catlass_example_add_executable NAME OPTYPE)
     set(EXAMPLE_DESTINATION bin)
 
     if(DEFINED ENABLE_SIMULATOR AND ENABLE_SIMULATOR)
-        set(EXAMPLE_DESTINATION bin_sim)
+        message(STATUS "Please run 'export LD_LIBRARY_PATH=${ASCEND_HOME_PATH}/tools/simulator/${NPU_MODEL}/lib:\$LD_LIBRARY_PATH' in your terminal before executing examples.")
     endif()
 
     add_executable(${NAME} ${ARGN})

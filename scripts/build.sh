@@ -40,15 +40,6 @@ echo -e "| |     / _ \ | | | |     / _ \ \___ \___ \ "
 echo -e "| |___ / ___ \| | | |___ / ___ \ ___) |__) |"
 echo -e " \____/_/   \_\_| |_____/_/   \_\____/____/ "
 
-function get_npu_model(){
-    if command -v npu-smi &> /dev/null; then
-        echo "Ascend$(npu-smi info -t board -i 0 -c 0 | awk '/Chip Name/ {print $NF}')"
-        return 0
-    else
-        return 1
-    fi
-}
-
 function show_help() {
     echo -e "${GREEN}Usage:${NC} $0 [options] <target>"
     echo -e "\n${BLUE}Options:${NC}"
@@ -83,14 +74,6 @@ if [[ ! -v ASCEND_HOME_PATH ]]; then
     exit 1
 fi
 
-if ! NPU_MODEL=$(get_npu_model); then
-    echo -e "${ERROR}No npu-smi detected, please check your environment!"
-    exit 1
-else
-    echo -e "${INFO}Detect NPU_MODEL: ${NPU_MODEL}${NC}"
-    CMAKE_OPTIONS+=("-DNPU_MODEL=${NPU_MODEL}")
-fi
-
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --clean)
@@ -105,8 +88,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --simulator)
             CMAKE_OPTIONS+=("-DASCEND_ENABLE_SIMULATOR=True")
-            CMAKE_OPTIONS+=("-DSIMULATOR_NPU_MODEL=${NPU_MODEL}")
-            POST_BUILD_INFO="${INFO}Please run ${NC}\nexport LD_LIBRARY_PATH=${ASCEND_HOME_PATH}/tools/simulator/${NPU_MODEL}/lib:\$LD_LIBRARY_PATH\n${GREEN}in your terminal before execute examples.${NC}"            
             ;;
         --tests)
             CMAKE_OPTIONS+=("-DBUILD_TESTS=True")
