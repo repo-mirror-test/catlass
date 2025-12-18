@@ -15,7 +15,12 @@
 
 namespace Catlass::Arch {
 
-constexpr uint32_t MAX_REVERSE_DEPTH = 16;
+// A certain cross core flag can be continuously set up to 15 times without waiting. In scenarios where there is only
+// one-way synchronization between cores and the synchronization operation is executed multiple times, if the core 
+// performing the set operation runs faster, it may result in the flag being set more than 15 times consecutively,
+// leading to a system freeze. To prevent such a freeze, we need to wait for the waiting cores to perform a reverse 
+// synchronization operation after executing the set operation MAX_REVERSE_DEPTH times.
+constexpr uint32_t MAX_REVERSE_DEPTH = 15;
 
 using FlagID = uint16_t;
 constexpr FlagID AIV_INTER_BLOCK_BARRIER = 8;
