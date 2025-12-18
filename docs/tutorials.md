@@ -29,9 +29,6 @@ touch basic_matmul.cpp
 // 引入必要的头文件
 #include "catlass/gemm/kernel/basic_matmul.hpp"
 
-#include <iostream>
-#include <vector>
-
 #include "helper.hpp"
 #include "golden.hpp"
 
@@ -242,6 +239,31 @@ int main(int argc, const char **argv)
 
 ### 编译与执行
 
+在`catlass/examples/basic_matmul/basic_matmul.cpp`同级文件夹下创建`CMakeLists.txt`文件，填入以下内容：
+
+<details>
+<summary><strong><code>CMakeLists.txt</code> 配置</strong></summary>
+
+```cmake
+set_source_files_properties(basic_matmul.cpp PROPERTIES LANGUAGE ASCEND)
+catlass_example_add_executable(
+    basic_matmul # 可执行程序名称
+    cube
+    basic_matmul.cpp
+)
+```
+</details>
+
+然后在`catlass/examples/CMakeLists.txt`文件的foreach循环中加入该算子的信息：
+
+```diff
+foreach(EXAMPLE
+    # ...
++   basic_matmul
+    # ...
+)
+```
+
 编译过程详情参考[算子编译](./quickstart.md#算子编译)，进入算子产物目录后执行测试，如出现`Compare success`。说明精度比对成功。
 ```bash
 cd output/bin
@@ -362,9 +384,6 @@ matmulOp(stream, aicCoreNum, fftsAddr);
 #endif
 
 #include "catlass/gemm/kernel/splitk_matmul.hpp"
-
-#include <iostream>
-#include <vector>
 
 #include "helper.hpp"
 #include "golden.hpp"
@@ -692,7 +711,6 @@ struct Options {
                 std::cerr << "argument out of range: " << e.what() << std::endl;
                 return FAILED;
             }
-        }
         }
         return SUCCESS;
     }
