@@ -33,18 +33,33 @@ function(determine_npu_model var arch)
     # if not exists, hint user to check command, or pass NPU_MODEL manually.
     if(NOT NPU_SMI_RESULT EQUAL 0)
         message(FATAL_ERROR "Neither npu-smi command is available nor NPU_MODEL is defined.\nPlease check npu-smi command or set NPU_MODEL manually.")
+        return()
+    endif()
+
+    # check minimal card id
+    execute_process(
+        COMMAND bash -c "npu-smi info -l | awk '/NPU ID/ {print \$NF; exit}'"
+        RESULT_VARIABLE NPU_SMI_RESULT
+        OUTPUT_VARIABLE NPU_SMI_MINIMAL_CARD_ID
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    if(NOT NPU_SMI_RESULT EQUAL 0)
+        message(FATAL_ERROR "Failed to get NPU_SMI_MINIMAL_CARD_ID")
+        return()
     endif()
 
     # Execute npu-smi to get NPU_MODEL
     execute_process(
-        COMMAND npu-smi info -t board -i 0 -c 0
+        COMMAND npu-smi info -t board -i ${NPU_SMI_MINIMAL_CARD_ID} -c 0
         RESULT_VARIABLE NPU_SMI_RESULT
         OUTPUT_VARIABLE NPU_SMI_OUTPUT
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_QUIET
     )
     if(NOT NPU_SMI_RESULT EQUAL 0)
-        message(FATAL_ERROR "Failed to execute 'npu-smi info -t board -i 0 -c 0'")
+        message(FATAL_ERROR "Failed to execute 'npu-smi info -t board -i ${NPU_SMI_MINIMAL_CARD_ID} -c 0'")
+        return()
     endif()
 
     # Extract Chip Name from npu-smi output

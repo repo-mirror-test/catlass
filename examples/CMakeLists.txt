@@ -39,8 +39,13 @@ add_link_options($<$<COMPILE_LANGUAGE:ASCEND>:-Wno-unused-command-line-argument>
 if(DEFINED ENABLE_PRINT AND ENABLE_PRINT)
     add_compile_options($<$<COMPILE_LANGUAGE:ASCEND>:--cce-enable-print>)
 endif()
-
-determine_npu_model(NPU_MODEL CATLASS_BISHENG_ARCH)
+if(NOT DEFINED NPU_MODEL OR NPU_MODEL STREQUAL "")
+    determine_npu_model(NPU_MODEL CATLASS_BISHENG_ARCH)
+    if(NPU_MODEL STREQUAL "")
+        message(FATAL_ERROR "Failed to determine NPU_MODEL. Please set NPU_MODEL manually by -DNPU_MODEL=Ascendxxxyy.")
+        return()
+    endif()
+endif()
 message("NPU MODEL: ${NPU_MODEL}")
 
 if(DEFINED ENABLE_SIMULATOR AND ENABLE_SIMULATOR)
