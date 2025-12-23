@@ -88,7 +88,7 @@ while [[ $# -gt 0 ]]; do
             CMAKE_OPTIONS+=("-DASCEND_ENABLE_MSDEBUG=True")
             ;;
         --simulator)
-            CMAKE_OPTIONS+=("-DASCEND_ENABLE_SIMULATOR=True")
+            CMAKE_OPTIONS+=("-DENABLE_SIMULATOR=True")
             ;;
         --tests)
             CMAKE_OPTIONS+=("-DBUILD_TESTS=True")

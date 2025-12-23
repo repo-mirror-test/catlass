@@ -23,9 +23,6 @@ if(CATLASS_BISHENG_ARCH STREQUAL "a2" OR CATLASS_BISHENG_ARCH STREQUAL "a3")
     )
 endif()
 
-determine_npu_model(NPU_MODEL CATLASS_BISHENG_ARCH)
-message("NPU MODEL: ${NPU_MODEL}")
-
 # common compile options
 add_compile_options(
     $<$<COMPILE_LANGUAGE:ASCEND>:-Wno-macro-redefined>
@@ -43,12 +40,17 @@ if(DEFINED ENABLE_PRINT AND ENABLE_PRINT)
     add_compile_options($<$<COMPILE_LANGUAGE:ASCEND>:--cce-enable-print>)
 endif()
 
+determine_npu_model(NPU_MODEL CATLASS_BISHENG_ARCH)
+message("NPU MODEL: ${NPU_MODEL}")
+
+if(DEFINED ENABLE_SIMULATOR AND ENABLE_SIMULATOR)
+    message("To run examples in simulator mode, execute the following commands in your terminal:")
+    message("export LD_LIBRARY_PATH=${ASCEND_HOME_PATH}/tools/simulator/${NPU_MODEL}/lib:\$LD_LIBRARY_PATH")
+    message("export LD_PRELOAD=${ASCEND_HOME_PATH}/tools/simulator/${NPU_MODEL}/lib/libruntime_camodel.so:${ASCEND_HOME_PATH}/tools/simulator/${NPU_MODEL}/lib/libnpu_drv_camodel.so")
+endif()
+
 macro(catlass_example_add_executable NAME OPTYPE)
     set(EXAMPLE_DESTINATION bin)
-
-    if(DEFINED ENABLE_SIMULATOR AND ENABLE_SIMULATOR)
-        message(STATUS "Please run 'export LD_LIBRARY_PATH=${ASCEND_HOME_PATH}/tools/simulator/${NPU_MODEL}/lib:\$LD_LIBRARY_PATH' in your terminal before executing examples.")
-    endif()
 
     add_executable(${NAME} ${ARGN})
     if(${OPTYPE} STREQUAL "cube" OR ${OPTYPE} STREQUAL "vec")

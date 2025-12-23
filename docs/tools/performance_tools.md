@@ -88,11 +88,14 @@ msprof op ./00_basic_matmul 256 512 1024 0
 bash scripts/build.sh --simulator 00_basic_matmul
 ```
 
-2. 编译完成后，根据提示，执行增加用于仿真的动态链接库的搜索路径
+- 这个选项实际不会改变编译的二进制程序，区别为是否输出第2步的仿真器路径提示。
+
+2. 编译完成后，根据提示，加载仿真器二进制路径。
 
 ```bash
 # 根据第1步的实际输出执行
-export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/...:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/tools/simulator/Ascendxxxyy/lib:$LD_LIBRARY_PATH
+export LD_PRELOAD=/usr/local/Ascend/ascend-toolkit/latest/tools/simulator/Ascendxxxyy/lib/libruntime_camodel.so:/usr/local/Ascend/ascend-toolkit/latest/tools/simulator/Ascendxxxyy/lib/libnpu_drv_camodel.so
 ```
 
 3. 切换到可执行文件的编译目录 `output/bin` 下， 使用`msprof op simulator`执行算子样例程序。
