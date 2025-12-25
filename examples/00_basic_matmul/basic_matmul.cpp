@@ -44,19 +44,23 @@ static void Run(const Options &options) {
     uint32_t n = options.problemShape.n();
     uint32_t k = options.problemShape.k();
 
+    using ElementA = half;
+    using ElementB = half;
+    using ElementC = half;
+
     size_t lenA = static_cast<size_t>(m) * k;
     size_t lenB = static_cast<size_t>(k) * n;
     size_t lenC = static_cast<size_t>(m) * n;
 
-    size_t sizeA = lenA * sizeof(fp16_t);
-    size_t sizeB = lenB * sizeof(fp16_t);
-    size_t sizeC = lenC * sizeof(fp16_t);
+    size_t sizeA = lenA * sizeof(ElementA);
+    size_t sizeB = lenB * sizeof(ElementB);
+    size_t sizeC = lenC * sizeof(ElementC);
 
     using LayoutA = layout::RowMajor;
     using LayoutB = layout::RowMajor;
     using LayoutC = layout::RowMajor;
-    LayoutA layoutA{m, k};
-    LayoutB layoutB{k, n};
+    LayoutA layoutA = LayoutA::template MakeLayout<ElementA>(m, k);
+    LayoutB layoutB = LayoutB::template MakeLayout<ElementB>(k, n);
     LayoutC layoutC{m, n};
 
     std::vector<fp16_t> hostA(lenA);
@@ -84,9 +88,9 @@ static void Run(const Options &options) {
 
     using L0TileShape = GemmShape<128, 256, 64>;
 
-    using AType = Gemm::GemmType<half, LayoutA>;
-    using BType = Gemm::GemmType<half, LayoutB>;
-    using CType = Gemm::GemmType<half, LayoutC>;
+    using AType = Gemm::GemmType<ElementA, LayoutA>;
+    using BType = Gemm::GemmType<ElementB, LayoutB>;
+    using CType = Gemm::GemmType<ElementC, LayoutC>;
 
     using BlockMmad = Gemm::Block::BlockMmad<DispatchPolicy, L1TileShape, L0TileShape, AType, BType, CType>;
     using BlockEpilogue = void;

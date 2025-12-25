@@ -5,59 +5,46 @@
  - 算子功能：完成基础矩阵乘计算
  - 计算公式：
   $$
-    C = A \times B
+    \begin{aligned}
+    C &= A \times B \\
+    C_{i,j} &= \Sigma_{k} A_{i,k}B_{k,j}
+    \end{aligned}
   $$
-  其中$A$和$B$是输入矩阵，$C$是算子计算输出
+  其中$A$和$B$分别是形如`(m,k)`，`(k,n)`的输入矩阵，$C$是形如`(m,n)`的输出矩阵。
 
 ## 参数说明
 
-<table class="tg" style="undefined;table-layout: fixed; width: 500px"><colgroup>
-<col style="width: 100px">
-<col style="width: 200px">
-<col style="width: 200px">
-</colgroup>
-<thead>
-  <tr>
-    <th class="tg-0pky">参数名</th>
-    <th class="tg-0pky">描述</th>
-    <th class="tg-0pky">约束</th>
-  </tr></thead>
-<tbody>
-  <tr>
-    <td class="tg-0pky"><code>m</code></td>
-    <td class="tg-0pky">矩阵乘中左矩阵A的行</td>
-    <td class="tg-0pky">-</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky"><code>n</code></td>
-    <td class="tg-0pky">矩阵乘中右矩阵B的列</td>
-    <td class="tg-0pky">-</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky"><code>k</code></td>
-    <td class="tg-0pky">矩阵乘中左矩阵A的列（也即右矩阵的行数）</td>
-    <td class="tg-0pky">-</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky"><code>deviceId</code></td>
-    <td class="tg-0pky">使用的NPU卡ID（默认0）</td>
-    <td class="tg-0pky">在设备的NPU有效范围内</td>
-  </tr>  
+以下是本样例的运行参数：
+| 参数名 | 描述 | 约束 | 
+| ----- | -------- | ------ | 
+| `m` | 矩阵乘中左矩阵A的行 | - | 
+| `n` | 矩阵乘中右矩阵B的列 | - | 
+| `k` | 矩阵乘中左矩阵A的列<br>（也即右矩阵的行数） | - | 
+| `deviceId` | 使用的NPU卡ID（默认0） | 在设备NPU有效范围内 | 
 
-</tbody>
-</table>
 
-相应地，原型计算有如下限制：
+BasicMatmul所涉及的关键模板参数如下:
 
-|名称/Name|类型/Class|数据类型/Dtype|维度/Dims|格式/Format|描述/Description|
-|---|---|---|---|---|---|
-|matA|inTensor|int8\|fp16\|bf16\|fp32|[m, k]|ND\|NZ|左矩阵，支持转置|
-|matB|inTensor|int8\|fp16\|bf16\|fp32|[n, k]|ND\|NZ|右矩阵，支持转置|
-|matC|outTensor|fp16\|bf16|[m, n]|ND|输出矩阵，非转置|
+| 模板参数 | 说明 | 有效范围 | 
+| ----- | -------- | -------------- |
+| `ElementA` | 左矩阵的数据类型 | `float` \| `fp16_t` \| `bfloat16_t` \| `int8_t` | 
+| `ElementB` | 右矩阵的数据类型 | `float` \| `fp16_t` \| `bfloat16_t` \| `int8_t` | 
+| `ElementC` | 右矩阵的数据类型 | `float` \| `fp16_t` \| `bfloat16_t` \| `int8_t` | 
+| `LayoutA` | 左矩阵的排布方式 | `layout::RowMajor` \| `layout::ColumnMajor` | 
+| `LayoutB` | 右矩阵的排布方式 | `layout::RowMajor` \| `layout::ColumnMajor` | 
+| `LayoutC` | 结果矩阵的排布方式 | `layout::RowMajor` | 
+
 
 ## 约束说明
 
-无
+左、右矩阵及结果矩阵的类型应满足下述类型映射条件。
+
+| `ElementA` | `ElementB` | `ElementC` | 
+| ----- | ----- | ---------- | 
+| `float` | `float` | `float` \| `fp16_t` \| `bfloat16_t` | 
+| `fp16_t` | `fp16_t` | `float` \| `fp16_t` \| `bfloat16_t` | 
+| `bfloat16_t` | `bfloat16_t` | `float` \| `fp16_t` \| `bfloat16_t` | 
+
 
 ## 代码组织
 ```
