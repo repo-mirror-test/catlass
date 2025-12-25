@@ -49,7 +49,9 @@ public:
     CATLASS_DEVICE
     LocalTensorBuffer()
     {
-        tensor = AscendC::LocalTensor<uint8_t>(Position, 0, ArchTag::L1_SIZE);
+        AscendC::TBuf<AscendC::TPosition::A1> tbufA1;
+        GetTPipePtr()->InitBuffer(tbufA1, ArchTag::L1_SIZE);
+        tensor = tbufA1.Get<uint8_t>();
     }
 };
 
@@ -64,7 +66,9 @@ public:
     CATLASS_DEVICE
     LocalTensorBuffer()
     {
-        tensor = AscendC::LocalTensor<uint8_t>(Position, 0, ArchTag::L0A_SIZE);
+        AscendC::TBuf<AscendC::TPosition::A2> tbufA2;
+        GetTPipePtr()->InitBuffer(tbufA2, ArchTag::L0A_SIZE);
+        tensor = tbufA2.Get<uint8_t>();
     }
 };
 
@@ -79,7 +83,9 @@ public:
     CATLASS_DEVICE
     LocalTensorBuffer()
     {
-        tensor = AscendC::LocalTensor<uint8_t>(Position, 0, ArchTag::L1_SIZE);
+        AscendC::TBuf<AscendC::TPosition::B1> tbufB1;
+        GetTPipePtr()->InitBuffer(tbufB1, ArchTag::L1_SIZE);
+        tensor = tbufB1.Get<uint8_t>();
     }
 };
 
@@ -94,7 +100,9 @@ public:
     CATLASS_DEVICE
     LocalTensorBuffer()
     {
-        tensor = AscendC::LocalTensor<uint8_t>(Position, 0, ArchTag::L0B_SIZE);
+        AscendC::TBuf<AscendC::TPosition::B2> tbufB2;
+        GetTPipePtr()->InitBuffer(tbufB2, ArchTag::L0B_SIZE);
+        tensor = tbufB2.Get<uint8_t>();
     }
 };
 
@@ -110,7 +118,9 @@ public:
     CATLASS_DEVICE
     LocalTensorBuffer()
     {
-        tensor = AscendC::LocalTensor<uint8_t>(Position, 0, ArchTag::L1_SIZE);
+        AscendC::TBuf<AscendC::TPosition::C1> tbufC1;
+        GetTPipePtr()->InitBuffer(tbufC1, ArchTag::L1_SIZE);
+        tensor = tbufC1.Get<uint8_t>();
     }
 };
 
@@ -126,7 +136,9 @@ public:
     CATLASS_DEVICE
     LocalTensorBuffer()
     {
-        tensor = AscendC::LocalTensor<uint8_t>(Position, 0, ArchTag::BIAS_SIZE);
+        AscendC::TBuf<AscendC::TPosition::C2> tbufC2;
+        GetTPipePtr()->InitBuffer(tbufC2, ArchTag::BIAS_SIZE);
+        tensor = tbufC2.Get<uint8_t>();
     }
 };
 
@@ -141,7 +153,9 @@ public:
     CATLASS_DEVICE
     LocalTensorBuffer()
     {
-        tensor = AscendC::LocalTensor<uint8_t>(Position, 0, ArchTag::L0C_SIZE);
+        AscendC::TBuf<AscendC::TPosition::CO1> tbufCO1;
+        GetTPipePtr()->InitBuffer(tbufCO1, ArchTag::L0C_SIZE);
+        tensor = tbufCO1.Get<uint8_t>();
     }
 };
 
@@ -157,7 +171,9 @@ public:
     CATLASS_DEVICE
     LocalTensorBuffer()
     {
-        tensor = AscendC::LocalTensor<uint8_t>(Position, 0, ArchTag::FIXBUF_SIZE);
+        AscendC::TBuf<AscendC::TPosition::C2PIPE2GM> tbufC2PIPE2GM;
+        GetTPipePtr()->InitBuffer(tbufC2PIPE2GM, ArchTag::FIXBUF_SIZE);
+        tensor = tbufC2PIPE2GM.Get<uint8_t>();
     }
 };
 
@@ -172,7 +188,9 @@ public:
     CATLASS_DEVICE
     LocalTensorBuffer()
     {
-        tensor = AscendC::LocalTensor<uint8_t>(Position, 0, ArchTag::UB_SIZE);
+        AscendC::TBuf<AscendC::TPosition::VECIN> tbufVECIN;
+        GetTPipePtr()->InitBuffer(tbufVECIN, ArchTag::UB_SIZE);
+        tensor = tbufVECIN.Get<uint8_t>();
     }
 };
 
@@ -187,7 +205,9 @@ public:
     CATLASS_DEVICE
     LocalTensorBuffer()
     {
-        tensor = AscendC::LocalTensor<uint8_t>(Position, 0, ArchTag::UB_SIZE);
+        AscendC::TBuf<AscendC::TPosition::VECOUT> tbufVECOUT;
+        GetTPipePtr()->InitBuffer(tbufVECOUT, ArchTag::UB_SIZE);
+        tensor = tbufVECOUT.Get<uint8_t>();
     }
 };
 
@@ -202,7 +222,9 @@ public:
     CATLASS_DEVICE
     LocalTensorBuffer()
     {
-        tensor = AscendC::LocalTensor<uint8_t>(Position, 0, ArchTag::UB_SIZE);
+        AscendC::TBuf<AscendC::TPosition::VECCALC> tbufVECCALC;
+        GetTPipePtr()->InitBuffer(tbufVECCALC, ArchTag::UB_SIZE);
+        tensor = tbufVECCALC.Get<uint8_t>();
     }
 };
 

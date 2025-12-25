@@ -19,6 +19,8 @@ namespace Catlass::Arch {
 template<class ArchTag>
 struct Resource {
 public:
+    AscendC::TPipe pipe;
+
     LocalTensorBuffer<ArchTag, AscendC::TPosition::A1> l1Buf;
     LocalTensorBuffer<ArchTag, AscendC::TPosition::A2> l0ABuf;
     LocalTensorBuffer<ArchTag, AscendC::TPosition::B2> l0BBuf;
@@ -28,9 +30,11 @@ public:
     LocalTensorBuffer<ArchTag, AscendC::TPosition::C2PIPE2GM> fpBuf;
 
     CATLASS_DEVICE
-    Resource() 
-    { 
-        
+    Resource()
+    {
+        // The initialization of AscendC::Tpipe will insert some synchronization interfaces,
+        // which may conflict with the usage by users. Therefore, the "destroy" interface is used for releasing.
+        pipe.Destroy();
     }
 };
 
