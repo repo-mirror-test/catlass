@@ -1,6 +1,51 @@
 # CHANGELOG
 
 ## CATLASS 1.X
+### CATLASS 1.3.0
+
+ - 关键特性
+   - 将`CMake`最低版本要求从3.22降至3.16
+   - 支持[`FixPipe`随路量化](https://gitcode.com/cann/catlass/tree/v1.3.0/include/catlass/gemm/tile/tile_copy.hpp#L373)
+   - [Matmul泛化工程](https://gitcode.com/cann/catlass/tree/v1.3.0/examples/102_dynamic_optimized_matmul/README.md)新增
+     + `PaddingCommonMatmul`
+     + `SmallMatmul`
+     + `PaddingMultiCoreSplitkMatmul`
+     + `PaddingStreamkMatmul`
+     + `单核切K系列模板`
+     + `动态Swizzle`
+ - 更多样例
+    - [INT4类型反量化Matmul算子](https://gitcode.com/cann/catlass/tree/v1.3.0/examples/32_w4a8_matmul/README.md)
+    - [2D卷积算子](https://gitcode.com/cann/catlass/tree/v1.3.0/examples/33_basic_conv2d/README.md)
+    - [单核切K优化Matmul算子](https://gitcode.com/cann/catlass/tree/v1.3.0/examples/34_single_core_splitk_matmul/README.md)
+ - 工具支持
+    - 新增[msOpGen](https://www.hiascend.com/document/detail/zh/mindstudio/82RC1/ODtools/Operatordevelopmenttools/atlasopdev_16_0018.html)工具代码示例[basic_matmul](https://gitcode.com/cann/catlass/tree/v1.3.0/examples/advanced/basic_matmul_aclnn/basic_matmul_aclnn.cpp)和[接入文档](https://gitcode.com/cann/catlass/tree/v1.3.0/examples/advanced/basic_matmul_aclnn/README.md)
+    - [msTuner_CATLASS工具](https://gitcode.com/cann/catlass/tree/v1.3.0/tools/tuner/README.md)新增
+      + `GroupedMatmulSliceM算子`
+      + `OptimizedMatmul算子`
+- 文档资料
+   - 新增[INT8类型反量化GroupedMatmul算子的详设文档](https://gitcode.com/cann/catlass/tree/v1.3.0/docs/contents/example_design/10_grouped_matmul_slice_m_per_token_dequant.md)，介绍`groupMatmul+后处理`类型的算子的设计思路和代码拆解
+   - 新增[矩阵乘模板总结文档](https://gitcode.com/cann/catlass/tree/v1.3.0/docs/contents/advanced/matmul_template_summary.md)，介绍模板库已有的Matmul模板设计
+   - 新增[CommonMatmul说明文档](https://gitcode.com/cann/catlass/tree/v1.3.0/examples/102_dynamic_optimized_matmul/doc/CommonMatmul.md)，介绍泛化Matmul工程中的基础模板
+- Bugfix&优化
+  - 修复[Flash Attention推理算子](https://gitcode.com/cann/catlass/tree/v1.3.0/examples/23_flash_attention_infer/README.md)在softmax拷贝mask时引入的内存问题
+  - 修复文档错误
+    + [catlass_optimize_guidance.md](https://gitcode.com/cann/catlass/tree/v1.3.0/docs/contents/advanced/catlass_optimize_guidance.md)
+    + [api.md](https://gitcode.com/cann/catlass/tree/v1.3.0/docs/contents/advanced/api.md)
+    + [quickstart.md](https://gitcode.com/cann/catlass/tree/v1.3.0/docs/quickstart.md)
+    + [tutorials.md](https://gitcode.com/cann/catlass/tree/v1.3.0/docs/tutorials.md)
+  - [Matmul泛化工程](https://gitcode.com/cann/catlass/tree/v1.3.0/examples/102_dynamic_optimized_matmul/README.md)更新
+    + 修改`TilingParams`读取方式增强可读性
+    + 优化原有的`Splitk ReduceAdd`，UB空间利用更充分
+    + 新增`CMakeLists.txt`中对python环境的判断
+  - 修复[OptimizedMatmul算子](https://gitcode.com/cann/catlass/tree/v1.3.0/examples/06_optimized_matmul/README.md)在kernel里没有支持PADDING_NZ的问题
+  - 优化重构[FP8类型反量化Matmul算子](https://gitcode.com/cann/catlass/tree/v1.3.0/examples/29_a2_fp8_e4m3_matmul/README.md)，使其更符合Prologue范式
+  - 修复[MatmulBias算子](https://gitcode.com/cann/catlass/tree/v1.3.0/examples/20_matmul_bias/README.md)精度问题并增加对bf16的校验拦截
+  - 优化仿真的编译逻辑以及在A3环境下的编译问题，现在编译`simulator`模式时逻辑与上板模式相同
+  - [msTuner_CATLASS工具](https://gitcode.com/cann/catlass/tree/v1.3.0/tools/tuner/README.md)更新
+    + 新增接口替换、非法字符、`groupCount`最大值检查等安全校验
+    + 修复下发部分算子时默认传入`ffts_addr`被拦截的问题
+  - 更改默认的跨核标志位可连续置位次数，避免超过次数后引发的系统卡死问题
+
 ### CATLASS 1.2.0
 
  - 关键特性
@@ -11,7 +56,6 @@
 
  - 更多样例
     - [Flash Attention推理算子](https://gitcode.com/cann/catlass/tree/v1.2.0/examples/23_flash_attention_infer/README.md)
-    - [2D卷积算子](https://gitcode.com/cann/catlass/tree/v1.2.0/examples/33_basic_conv2d/README.md)
     - [3D卷积算子](https://gitcode.com/cann/catlass/tree/v1.2.0/examples/24_conv_bias/README.md)
     - [A矩阵全加载Matmul算子](https://gitcode.com/cann/catlass/tree/v1.2.0/examples/25_matmul_full_loadA/README.md)
     - [小矩阵优化Matmul算子](https://gitcode.com/cann/catlass/tree/v1.2.0/examples/31_small_matmul/README.md)
