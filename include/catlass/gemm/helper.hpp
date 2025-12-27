@@ -12,6 +12,7 @@
 #define CATLASS_GEMM_HELPER_HPP
 
 #include "catlass/catlass.hpp"
+#include "catlass/numeric_size.hpp"
 #include "catlass/layout/layout.hpp"
 #include "catlass/gemm/gemm_type.hpp"
 #include "tla/layout.hpp"
@@ -25,7 +26,7 @@ struct L1AlignHelper {
 
 template<class Element>
 struct L1AlignHelper<Element, layout::RowMajor> {
-    static constexpr uint32_t ELE_NUM_PER_C0 = BYTE_PER_C0 / sizeof(Element);
+    static constexpr uint32_t ELE_NUM_PER_C0 = BytesToBits(BYTE_PER_C0) / SizeOfBits<Element>::value;
     static constexpr uint32_t M_ALIGNED = C0_NUM_PER_FRACTAL;
     static constexpr uint32_t K_ALIGNED = ELE_NUM_PER_C0;
     static constexpr uint32_t N_ALIGNED = ELE_NUM_PER_C0;
@@ -33,7 +34,7 @@ struct L1AlignHelper<Element, layout::RowMajor> {
 
 template<class Element>
 struct L1AlignHelper<Element, layout::ColumnMajor> {
-    static constexpr uint32_t ELE_NUM_PER_C0 = BYTE_PER_C0 / sizeof(Element);
+    static constexpr uint32_t ELE_NUM_PER_C0 = BytesToBits(BYTE_PER_C0) / SizeOfBits<Element>::value;
     static constexpr uint32_t M_ALIGNED = ELE_NUM_PER_C0;
     static constexpr uint32_t K_ALIGNED = ELE_NUM_PER_C0;
     static constexpr uint32_t N_ALIGNED = C0_NUM_PER_FRACTAL;
@@ -41,7 +42,7 @@ struct L1AlignHelper<Element, layout::ColumnMajor> {
 
 template<class Element>
 struct L1AlignHelper<Element, layout::PaddingRowMajor> {
-    static constexpr uint32_t ELE_NUM_PER_C0 = BYTE_PER_C0 / sizeof(Element);
+    static constexpr uint32_t ELE_NUM_PER_C0 = BytesToBits(BYTE_PER_C0) / SizeOfBits<Element>::value;
     static constexpr uint32_t M_ALIGNED = C0_NUM_PER_FRACTAL;
     static constexpr uint32_t K_ALIGNED = ELE_NUM_PER_C0;
     static constexpr uint32_t N_ALIGNED = ELE_NUM_PER_C0;
@@ -49,7 +50,7 @@ struct L1AlignHelper<Element, layout::PaddingRowMajor> {
 
 template<class Element>
 struct L1AlignHelper<Element, layout::PaddingColumnMajor> {
-    static constexpr uint32_t ELE_NUM_PER_C0 = BYTE_PER_C0 / sizeof(Element);
+    static constexpr uint32_t ELE_NUM_PER_C0 = BytesToBits(BYTE_PER_C0) / SizeOfBits<Element>::value;
     static constexpr uint32_t M_ALIGNED = ELE_NUM_PER_C0;
     static constexpr uint32_t K_ALIGNED = ELE_NUM_PER_C0;
     static constexpr uint32_t N_ALIGNED = C0_NUM_PER_FRACTAL;
@@ -57,7 +58,7 @@ struct L1AlignHelper<Element, layout::PaddingColumnMajor> {
 
 template<class Element>
 struct L1AlignHelper<Element, layout::zN> {
-    static constexpr uint32_t ELE_NUM_PER_C0 = BYTE_PER_C0 / sizeof(Element);
+    static constexpr uint32_t ELE_NUM_PER_C0 = BytesToBits(BYTE_PER_C0) / SizeOfBits<Element>::value;
     static constexpr uint32_t M_ALIGNED = C0_NUM_PER_FRACTAL;
     static constexpr uint32_t K_ALIGNED = ELE_NUM_PER_C0;
     static constexpr uint32_t N_ALIGNED = ELE_NUM_PER_C0;
@@ -65,7 +66,7 @@ struct L1AlignHelper<Element, layout::zN> {
 
 template<class Element>
 struct L1AlignHelper<Element, layout::nZ> {
-    static constexpr uint32_t ELE_NUM_PER_C0 = BYTE_PER_C0 / sizeof(Element);
+    static constexpr uint32_t ELE_NUM_PER_C0 = BytesToBits(BYTE_PER_C0) / SizeOfBits<Element>::value;
     static constexpr uint32_t M_ALIGNED = ELE_NUM_PER_C0;
     static constexpr uint32_t K_ALIGNED = ELE_NUM_PER_C0;
     static constexpr uint32_t N_ALIGNED = C0_NUM_PER_FRACTAL;
@@ -73,13 +74,13 @@ struct L1AlignHelper<Element, layout::nZ> {
 
 template<class Element>
 struct L1AlignHelper<Element, layout::NC1HWC0> {
-    static constexpr uint32_t ELE_NUM_PER_C0 = BYTE_PER_C0 / sizeof(Element);
+    static constexpr uint32_t ELE_NUM_PER_C0 = BytesToBits(BYTE_PER_C0) / SizeOfBits<Element>::value;
     static constexpr uint32_t HOWO_ALIGNED = C0_NUM_PER_FRACTAL;
 };
 
 template<class Element>
 struct L1AlignHelper<Element, layout::CI1KHKWCOCI0> {
-    static constexpr uint32_t ELE_NUM_PER_C0 = BYTE_PER_C0 / sizeof(Element);
+    static constexpr uint32_t ELE_NUM_PER_C0 = BytesToBits(BYTE_PER_C0) / SizeOfBits<Element>::value;
     static constexpr uint32_t COUT_ALIGNED = C0_NUM_PER_FRACTAL;
 };
 
@@ -108,6 +109,11 @@ struct ElementAccumulatorSelector<int8_t, int8_t> {
 template<>
 struct ElementAccumulatorSelector<bfloat16_t, bfloat16_t> {
     using ElementAccumulator = float;
+};
+
+template<>
+struct ElementAccumulatorSelector<AscendC::int4b_t, AscendC::int4b_t> {
+    using ElementAccumulator = int32_t;
 };
 
 template<class GmAType>
@@ -229,7 +235,7 @@ struct L1AlignHelperTla {
 
 template<class Element, class Layout>
 struct L1AlignHelperTla<Element, Layout, std::enable_if_t<tla::detail::isRowMajor<Layout>::value>> {
-    static constexpr uint32_t ELE_NUM_PER_C0 = BYTE_PER_C0 / sizeof(Element);
+    static constexpr uint32_t ELE_NUM_PER_C0 = BytesToBits(BYTE_PER_C0) / SizeOfBits<Element>::value;
     static constexpr uint32_t M_ALIGNED = C0_NUM_PER_FRACTAL;
     static constexpr uint32_t K_ALIGNED = ELE_NUM_PER_C0;
     static constexpr uint32_t N_ALIGNED = ELE_NUM_PER_C0;
@@ -237,7 +243,7 @@ struct L1AlignHelperTla<Element, Layout, std::enable_if_t<tla::detail::isRowMajo
 
 template<class Element, class Layout>
 struct L1AlignHelperTla<Element, Layout, std::enable_if_t<tla::detail::isColumnMajor<Layout>::value>> {
-    static constexpr uint32_t ELE_NUM_PER_C0 = BYTE_PER_C0 / sizeof(Element);
+    static constexpr uint32_t ELE_NUM_PER_C0 = BytesToBits(BYTE_PER_C0) / SizeOfBits<Element>::value;
     static constexpr uint32_t M_ALIGNED = ELE_NUM_PER_C0;
     static constexpr uint32_t K_ALIGNED = ELE_NUM_PER_C0;
     static constexpr uint32_t N_ALIGNED = C0_NUM_PER_FRACTAL;

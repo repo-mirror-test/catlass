@@ -117,6 +117,22 @@ struct TileCopyPerTokenDequant {
     using CopyGmToUbPerTokenScale = CopyPerTokenScale2Ub<ArchTag, PerTokenScaleType>;
     using CopyUbToGmD = CopyUb2Gm<ArchTag, DType>;
 };
+
+template <
+    class ArchTag,
+    class CType,
+    class PerTokenScaleType,
+    class DType
+>
+struct TileCopyW4A4Gemm {
+    using ElementC = typename CType::Element;
+    using ElementPerTokenScale = typename PerTokenScaleType::Element;
+    using ElementD = typename DType::Element;
+
+    using CopyGmToUbC = CopyGm2Ub<ArchTag, CType>;
+    using CopyGmToUbPerTokenScale = CopyGm2Ub<ArchTag, PerTokenScaleType>;
+    using CopyUbToGmD = CopyUb2Gm<ArchTag, DType>;
+};
 } // namespace Catlass::Epilogue::Tile
 
 #endif  // CATLASS_EPILOGUE_TILE_TILE_COPY_HPP

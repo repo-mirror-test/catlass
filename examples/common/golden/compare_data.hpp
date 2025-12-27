@@ -56,6 +56,48 @@ std::vector<uint64_t> CompareData(const std::vector<int32_t>& result, const std:
     return errorIndices;
 }
 
+template<class ElementResult>
+std::vector<uint64_t> CompareDataBfloat16(const std::vector<ElementResult>& result, const std::vector<float>& expect,
+    uint32_t computeNum)
+{
+    /*
+     * 高性能 浮点计算通过标准：
+     * 计算次数<2048, errThres = 2^{-7}
+     * 大于>2048, errThres = 2^{-6}
+     * 
+     * 当$abs(golden)>=smallValThres$时，使用相对误差校验：
+     * $$
+     *  RE = \frac { abs(actual - golden)} { abs{golden} + 1e^{-7}} \le errThres
+     * $$
+     * 反之，采用绝对误差校验：
+     * $$
+     *  AE= abs(actual - golden) \le errThres
+     * $$ 
+     * 判断公式：
+     * $$
+     *  \left \| actual - expected \right\| \le 
+          errThres \times \max(smallValThres, abs(expected))
+     * $$ 
+    */
+    using ElementCompare = float;
+    const uint32_t computeNumThreshold = 2048;
+    const float smallValThres = 1.0f / 256;
+    const float rtolGeneral = 1.0f / 128;
+    const float rtolOverThreshold = 1.0f / 64;
+
+    float rtol = computeNum < computeNumThreshold ? rtolGeneral : rtolOverThreshold;
+    std::vector<uint64_t> errorIndices;
+    for (uint64_t i = 0; i < result.size(); ++i) {
+        ElementCompare actualValue = static_cast<ElementCompare>(result[i]);
+        ElementCompare expectValue = expect[i];
+        ElementCompare diff = std::fabs(actualValue - expectValue);
+        if (diff > rtol * std::max(smallValThres, std::fabs(expectValue))) {
+            errorIndices.push_back(i);
+        }
+    }
+    return errorIndices;
+}
+
 // Compare for GroupedMatmul slicing M
 template<class ElementResult, class ElementCompare>
 std::vector<uint64_t> CompareData(const std::vector<ElementResult>& result, const std::vector<ElementCompare>& expect,
