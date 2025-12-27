@@ -122,7 +122,7 @@ template <
 
     constexpr bool enableUnitFlag = true;
     constexpr bool enableShuffleK = true;
-    using DispatchPolicy = Catlass::Gemm::MmadAtlasA2DynamicStreamk<enableShuffleK, enableShuffleK>;
+    using DispatchPolicy = Catlass::Gemm::MmadAtlasA2DynamicStreamk<enableUnitFlag, enableShuffleK>;
 
     using AType = Catlass::Gemm::GemmType<ElementA, typename PaddingBuilderA::LayoutAfterPadding>;
     using BType = Catlass::Gemm::GemmType<ElementB, typename PaddingBuilderB::LayoutAfterPadding>;
@@ -137,11 +137,11 @@ template <
 
     using BlockScheduler = typename Catlass::Gemm::Block::DynamicStreamkGemmIdentityBlockSwizzle;
     constexpr uint32_t computeLength = 192 * 1024 / sizeof(ElementAccumulator);
-    using RecudeAdd =
+    using ReduceAdd =
         Catlass::Gemm::Kernel::StreamkReduceAdd<ArchTag, BlockScheduler, ElementAccumulator, ElementC, computeLength>;
     // kernel level
     using MatmulKernel = Catlass::Gemm::Kernel::DynamicPaddingStreamkMatmul<
-        PaddingA, PaddingB, BlockMmad, BlockEpilogue, BlockScheduler, RecudeAdd>;
+        PaddingA, PaddingB, BlockMmad, BlockEpilogue, BlockScheduler, ReduceAdd>;
     typename MatmulKernel::Params params{
         problemShape, l1TileShape, gmA,  layoutA,   gmB,           layoutB,         gmC,
         layoutC,      gmWA,        gmWB, gmReduceW, swizzleOffset, swizzleDirection
